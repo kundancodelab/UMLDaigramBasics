@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UML Diagrams for iOS Developers: A Practical Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --text-color: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: #1f2937;
+            --primary-color: #3b82f6;
+            --success-color: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            color: #60a5fa;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 25px;
+            color: #93c5fd;
+        }
+
+        p, li {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        strong {
+            color: var(--text-color);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        pre {
+            background-color: #1f2937;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: #e5e7eb;
+        }
+
+        .diagram-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .alert-box {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 16px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .alert-box p {
+            margin: 0;
+            color: #93c5fd;
+        }
+    </style>
+    <!-- Load Mermaid.js for drawing diagrams directly in browser -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'dark',
+            themeVariables: {
+                background: '#111827',
+                primaryColor: '#1f2937',
+                primaryTextColor: '#f3f4f6',
+                lineColor: '#3b82f6'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>UML Diagrams for iOS Developers</h1>
+        <p>A simple, practical guide on how to design and read diagrams for Swift mobile apps.</p>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 30px 0;">
+
+        <p>Think of UML as a visual representation of your code. If you can write Swift, you can understand UML.</p>
+        <p>We will focus on only what you need to build great iOS apps, starting with the two most important diagrams:</p>
+        <ul>
+            <li><strong>The Class Diagram</strong> (how your code is structured)</li>
+            <li><strong>The Sequence Diagram</strong> (how your code runs over time)</li>
+        </ul>
+
+        <h2>Part 1: The Class Diagram (The Structure)</h2>
+        <p>A Class Diagram is a blueprint of the classes, structs, and protocols in your app, showing how they connect.</p>
+
+        <h3>1. The Class Box</h3>
+        <p>In UML, every Class or Struct is represented by a box divided into three sections:</p>
+
+        <pre>┌────────────────────────────────────────┐
+│               ClassName                │  <-- 1. Name of Class
+├────────────────────────────────────────┤
+│ - privateProperty: String              │  <-- 2. Variables / State
+│ + publicProperty: Int                  │
+├────────────────────────────────────────┤
+│ + fetchData()                          │  <-- 3. Functions / Actions
+│ - validateInput() -> Bool              │
+└────────────────────────────────────────┘</pre>
+
+        <h4>The Secret Code (Access Modifiers):</h4>
+        <p>Before any variable or function, you place a symbol to show its visibility:</p>
+        <ul>
+            <li><strong><code>-</code> (Minus) = Private.</strong> Only this class can see/use it. (e.g., <code>- modelContext</code>)</li>
+            <li><strong><code>+</code> (Plus) = Public / Internal.</strong> Other classes can access it. (e.g., <code>+ startSync()</code>)</li>
+        </ul>
+
+        <h3>2. The Relationships (How boxes connect)</h3>
+        <p>To connect these boxes, we use lines and arrows. Here are the two relationships you need to know:</p>
+
+        <h4>Relationship A: Association ("Has a")</h4>
+        <p>One class holds a reference to another class.</p>
+        <ul>
+            <li><strong>Swift Code:</strong> <code>let repository: BugRepository</code></li>
+            <li><strong>UML:</strong> A solid line with an arrow pointing to the class it holds.</li>
+        </ul>
+
+        <div class="diagram-container">
+            <pre class="mermaid">
+            classDiagram
+                class BugReportCreationViewModel {
+                    - repository: BugReportingRepository
+                    + advance()
+                }
+                class BugReportingRepository {
+                    + createTicket()
+                }
+                BugReportCreationViewModel --> BugReportingRepository : holds reference to
+            </pre>
+        </div>
+
+        <h4>Relationship B: Conformance ("Is a" Protocol)</h4>
+        <p>A class conforms to a Protocol.</p>
+        <ul>
+            <li><strong>Swift Code:</strong> <code>struct BugReportingRepository: BugReportingRepositoryProtocol</code></li>
+            <li><strong>UML:</strong> A dashed line with an <strong>empty triangle head</strong> pointing to the Protocol.</li>
+        </ul>
+
+        <div class="diagram-container">
+            <pre class="mermaid">
+            classDiagram
+                class BugReportingRepositoryProtocol {
+                    <<interface>>
+                    + createTicket()
+                }
+                class BugReportingRepository {
+                    + createTicket()
+                }
+                BugReportingRepository ..|> BugReportingRepositoryProtocol : conforms to
+            </pre>
+        </div>
+
+        <h2>Part 2: The Sequence Diagram (The Flow)</h2>
+        <p>If the Class Diagram is a map of a city, the Sequence Diagram is a <strong>video showing a car driving through the streets</strong>. It shows how objects talk to each other over time.</p>
+
+        <h3>How to Read a Sequence Diagram:</h3>
+        <ol>
+            <li><strong>Objects</strong> are represented by boxes at the top.</li>
+            <li>Dotted vertical lines go down from each object (called <strong>Lifelines</strong>).</li>
+            <li>Time flows <strong>from top to bottom</strong>.</li>
+            <li><strong>Horizontal arrows</strong> show messages (function calls) sent between objects.</li>
+        </ol>
+
+        <h3>A Simple iOS Example: User Taps "Submit Bug"</h3>
+        <p>Here is how code flows when a user taps submit:</p>
+
+        <div class="diagram-container">
+            <pre class="mermaid">
+            sequenceDiagram
+                actor User
+                participant View as BugView (SwiftUI)
+                participant VM as BugViewModel
+                participant Repo as BugRepository
+
+                User->>View: Taps "Submit" Button
+                View->>VM: VM.submitTicket()
+                Note over VM: Validates input...
+                VM->>Repo: Repo.createTicket(request)
+                Repo-->>VM: Returns Ticket ID ("BUG-123")
+                VM-->>View: Show Success Alert
+                View-->>User: Visual feedback on screen
+            </pre>
+        </div>
+
+        <ul>
+            <li><strong>Solid arrow (<code>-&gt;&gt;</code>)</strong>: Calling a function.</li>
+            <li><strong>Dashed arrow (<code>--&gt;&gt;</code>)</strong>: Returning a value (or callback/completion handler).</li>
+        </ul>
+
+        <h2>Why this will make you a better iOS Developer</h2>
+        <p>Look at the sequence diagram above. Before you write a single line of Swift, you can see:</p>
+        <ul>
+            <li>If the <code>ViewModel</code> is doing network calls directly (which is bad!).</li>
+            <li>If the <code>View</code> contains business logic (which is bad!).</li>
+            <li>Exactly what parameter needs to be passed to <code>Repo.createTicket</code>.</li>
+        </ul>
+
+        <div class="alert-box">
+            <p><strong>The Golden Mindset Shift:</strong> Draw first, then code. Drawing a diagram before coding forces you to catch design mistakes when they are cheap to fix — on paper — rather than after you have written 300 lines of code.</p>
+        </div>
+    </div>
+</body>
+</html>
