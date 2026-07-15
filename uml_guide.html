@@ -91,6 +91,13 @@
             margin: 20px 0;
             display: flex;
             justify-content: center;
+            cursor: zoom-in;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .diagram-container:hover {
+            transform: scale(1.01);
+            border-color: var(--primary-color);
         }
 
         .alert-box {
@@ -104,6 +111,102 @@
         .alert-box p {
             margin: 0;
             color: #93c5fd;
+        }
+
+        /* Lightbox Overlay styles */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 15, 25, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        #lightbox-content {
+            transition: transform 0.1s ease;
+            transform: scale(1);
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+
+        #lightbox-content:active {
+            cursor: grabbing;
+        }
+
+        #lightbox-content svg {
+            max-width: 90vw;
+            max-height: 80vh;
+        }
+
+        .lightbox-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1001;
+        }
+
+        .lightbox-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 24px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .lightbox-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #zoom-reset {
+            border-radius: 22px;
+            width: auto;
+            padding: 0 20px;
+            font-size: 14px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            font-family: Arial, sans-serif;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
     </style>
     <!-- Load Mermaid.js for drawing diagrams directly in browser -->
@@ -170,15 +273,15 @@
 
         <div class="diagram-container">
             <pre class="mermaid">
-            classDiagram
-                class BugReportCreationViewModel {
-                    - repository: BugReportingRepository
-                    + advance()
-                }
-                class BugReportingRepository {
-                    + createTicket()
-                }
-                BugReportCreationViewModel --> BugReportingRepository : holds reference to
+classDiagram
+class BugReportCreationViewModel {
+    -repository: BugReportingRepository
+    +advance()
+}
+class BugReportingRepository {
+    +createTicket()
+}
+BugReportCreationViewModel --> BugReportingRepository : holds reference to
             </pre>
         </div>
 
@@ -191,15 +294,14 @@
 
         <div class="diagram-container">
             <pre class="mermaid">
-            classDiagram
-                class BugReportingRepositoryProtocol {
-                    <<interface>>
-                    + createTicket()
-                }
-                class BugReportingRepository {
-                    + createTicket()
-                }
-                BugReportingRepository ..|> BugReportingRepositoryProtocol : conforms to
+classDiagram
+class BugReportingRepositoryProtocol {
+    +createTicket()
+}
+class BugReportingRepository {
+    +createTicket()
+}
+BugReportingRepository ..|> BugReportingRepositoryProtocol : conforms to
             </pre>
         </div>
 
@@ -219,19 +321,19 @@
 
         <div class="diagram-container">
             <pre class="mermaid">
-            sequenceDiagram
-                actor User
-                participant View as BugView (SwiftUI)
-                participant VM as BugViewModel
-                participant Repo as BugRepository
+sequenceDiagram
+    actor User
+    participant View as BugView (SwiftUI)
+    participant VM as BugViewModel
+    participant Repo as BugRepository
 
-                User->>View: Taps "Submit" Button
-                View->>VM: VM.submitTicket()
-                Note over VM: Validates input...
-                VM->>Repo: Repo.createTicket(request)
-                Repo-->>VM: Returns Ticket ID ("BUG-123")
-                VM-->>View: Show Success Alert
-                View-->>User: Visual feedback on screen
+    User->>View: Taps "Submit" Button
+    View->>VM: VM.submitTicket()
+    Note over VM: Validates input...
+    VM->>Repo: Repo.createTicket(request)
+    Repo-->>VM: Returns Ticket ID ("BUG-123")
+    VM-->>View: Show Success Alert
+    View-->>User: Visual feedback on screen
             </pre>
         </div>
 
@@ -240,17 +342,119 @@
             <li><strong>Dashed arrow (<code>--&gt;&gt;</code>)</strong>: Returning a value (or callback/completion handler).</li>
         </ul>
 
-        <h2>Why this will make you a better iOS Developer</h2>
-        <p>Look at the sequence diagram above. Before you write a single line of Swift, you can see:</p>
-        <ul>
-            <li>If the <code>ViewModel</code> is doing network calls directly (which is bad!).</li>
-            <li>If the <code>View</code> contains business logic (which is bad!).</li>
-            <li>Exactly what parameter needs to be passed to <code>Repo.createTicket</code>.</li>
-        </ul>
-
         <div class="alert-box">
             <p><strong>The Golden Mindset Shift:</strong> Draw first, then code. Drawing a diagram before coding forces you to catch design mistakes when they are cheap to fix — on paper — rather than after you have written 300 lines of code.</p>
         </div>
     </div>
+
+    <!-- Lightbox Zoom Modal markup -->
+    <div id="lightbox">
+        <div class="close-btn" id="close-btn">&times;</div>
+        <div id="lightbox-content"></div>
+        <div class="lightbox-controls">
+            <button class="lightbox-btn" id="zoom-out">-</button>
+            <button class="lightbox-btn" id="zoom-reset">100%</button>
+            <button class="lightbox-btn" id="zoom-in">+</button>
+        </div>
+    </div>
+
+    <!-- Lightbox Interactivity script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const lightbox = document.getElementById('lightbox');
+            const content = document.getElementById('lightbox-content');
+            const closeBtn = document.getElementById('close-btn');
+            const zoomIn = document.getElementById('zoom-in');
+            const zoomOut = document.getElementById('zoom-out');
+            const zoomReset = document.getElementById('zoom-reset');
+
+            let currentScale = 1;
+            let isDragging = false;
+            let startX, startY, translateX = 0, translateY = 0;
+
+            const setupLightbox = () => {
+                document.querySelectorAll('.diagram-container').forEach(container => {
+                    const svg = container.querySelector('svg');
+                    if (svg) {
+                        container.addEventListener('click', (e) => {
+                            content.innerHTML = svg.outerHTML;
+                            const clonedSvg = content.querySelector('svg');
+                            
+                            clonedSvg.style.width = '85vw';
+                            clonedSvg.style.height = '75vh';
+                            
+                            lightbox.style.display = 'flex';
+                            currentScale = 1;
+                            translateX = 0;
+                            translateY = 0;
+                            updateTransform();
+                        });
+                    }
+                });
+            };
+
+            const checkInterval = setInterval(() => {
+                const svgs = document.querySelectorAll('.diagram-container svg');
+                if (svgs.length >= 2) {
+                    setupLightbox();
+                    clearInterval(checkInterval);
+                }
+            }, 300);
+
+            const updateTransform = () => {
+                content.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+                zoomReset.textContent = `${Math.round(currentScale * 100)}%`;
+            };
+
+            const closeLightbox = () => {
+                lightbox.style.display = 'none';
+                content.innerHTML = '';
+            };
+            closeBtn.addEventListener('click', closeLightbox);
+            
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox || e.target === content) {
+                    closeLightbox();
+                }
+            });
+
+            zoomIn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentScale = Math.min(currentScale + 0.25, 4);
+                updateTransform();
+            });
+            zoomOut.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentScale = Math.max(currentScale - 0.25, 0.5);
+                updateTransform();
+            });
+            zoomReset.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentScale = 1;
+                translateX = 0;
+                translateY = 0;
+                updateTransform();
+            });
+
+            content.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                content.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                content.style.cursor = 'grab';
+            });
+        });
+    </script>
 </body>
 </html>
